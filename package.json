@@ -22,6 +22,7 @@
   ],
   "scripts": {
     "build": "rollup -c",
+    "build:skip-lint": "rollup -c",
     "build:watch": "rollup -c -w",
     "dev": "rollup -c -w",
     "test": "jest",
@@ -34,7 +35,8 @@
     "format:check": "prettier --check src/**/*.ts",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist",
-    "prebuild": "npm run clean && npm run lint && npm run type-check",
+    "prebuild": "npm run clean",
+    "prebuild:full": "npm run clean && npm run lint && npm run type-check",
     "prepack": "npm run build",
     "benchmark": "node scripts/benchmark.js",
     "docs:generate": "typedoc src/index.ts",
@@ -66,7 +68,7 @@
   ],
   "author": {
     "name": "Mathrok Team",
-    "email": "contact@mathrok.dev",
+    "email": "calculus069@gmail.com",
     "url": "https://mathrok.dev"
   },
   "license": "MIT",

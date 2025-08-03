@@ -34,7 +34,7 @@ If you need help with Mathrok, you can:
 1. Check the documentation in this directory
 2. Look for examples in the [examples](./examples) directory
 3. Open an issue on the [GitHub repository](https://github.com/mathrok/mathrok/issues)
-4. Contact the maintainers at support@mathrok.dev
+4. Contact the maintainers at calculus069@gmail.com
 
 ## License
 
