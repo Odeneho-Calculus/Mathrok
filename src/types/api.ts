@@ -320,7 +320,7 @@ export interface FactorResult extends MathResult<string> {
     /** Individual factors */
     readonly factors: readonly Factor[];
     /** Factoring method used */
-    readonly method: FactoringMethod;
+    readonly method: string;
 }
 
 /**
@@ -329,7 +329,7 @@ export interface FactorResult extends MathResult<string> {
 export interface Factor {
     readonly expression: string;
     readonly multiplicity: number;
-    readonly type: FactorType;
+    readonly type: string;
 }
 
 /**
@@ -368,7 +368,7 @@ export interface ExpandResult extends MathResult<string> {
     /** Terms in expanded form */
     readonly terms: readonly Term[];
     /** Expansion method used */
-    readonly method: ExpansionMethod;
+    readonly method: string;
 }
 
 /**

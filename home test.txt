@@ -1,0 +1,5 @@
+cd "c:\Users\kalculusGuy\Desktop\projectEra\Libraries\NPM\mathicjs" && pnpm run build
+
+cd "c:\Users\kalculusGuy\Desktop\projectEra\Libraries\NPM\mathicjs\docs\examples" &&  rm -rf node_modules && pnpm install
+
+cd "c:\Users\kalculusGuy\Desktop\projectEra\Libraries\NPM\mathicjs\docs\examples" && pnpm run comprehensive

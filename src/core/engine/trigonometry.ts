@@ -18,10 +18,10 @@ import type {
 } from '../../types/api.js';
 import { MathError, MathErrorType } from '../../types/core.js';
 
-// Use require for Nerdamer to ensure proper module loading
-const nerdamer = require('nerdamer');
-require('nerdamer/Algebra');
-require('nerdamer/Solve');
+// Import Nerdamer with proper ES6 imports for browser compatibility
+import nerdamer from 'nerdamer';
+import 'nerdamer/Algebra';
+import 'nerdamer/Solve';
 
 /**
  * Trigonometric identities and transformations

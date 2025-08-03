@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathrok Usage Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .result {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Mathrok Library Usage Test</h1>
+
+        <div class="test-section">
+            <h3>Method 1: Using Constructor (window.Mathrok.Mathrok)</h3>
+            <button onclick="testConstructor()">Test Constructor Method</button>
+            <div id="constructor-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Method 2: Using Pre-instantiated Instance (window.Mathrok.default)</h3>
+            <button onclick="testInstance()">Test Instance Method</button>
+            <div id="instance-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Advanced Operations Test</h3>
+            <button onclick="testAdvanced()">Test Advanced Features</button>
+            <div id="advanced-result"></div>
+        </div>
+    </div>
+
+    <!-- Include Mathrok library -->
+    <script src="../../dist/mathrok.umd.js"></script>
+
+    <script>
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'error' : 'success';
+            element.innerHTML += `<div class="${className}">${message}</div>`;
+        }
+
+        function logResult(elementId, result) {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<div class="result">${JSON.stringify(result, null, 2)}</div>`;
+        }
+
+        async function testConstructor() {
+            const resultDiv = document.getElementById('constructor-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                log('constructor-result', 'Creating Mathrok instance using constructor...');
+                const mathrok = new window.Mathrok.Mathrok();
+                log('constructor-result', '✓ Constructor method successful');
+
+                // Test basic evaluation
+                const result = await mathrok.evaluate('2^3 + 4*5');
+                log('constructor-result', '✓ Basic evaluation successful');
+                logResult('constructor-result', result);
+
+            } catch (error) {
+                log('constructor-result', `✗ Constructor method failed: ${error.message}`, true);
+            }
+        }
+
+        async function testInstance() {
+            const resultDiv = document.getElementById('instance-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                log('instance-result', 'Using pre-instantiated Mathrok instance...');
+                const mathrok = window.Mathrok.default;
+                log('instance-result', '✓ Instance method successful');
+
+                // Test basic evaluation
+                const result = await mathrok.evaluate('3.14159 * 2 + sqrt(16)');
+                log('instance-result', '✓ Basic evaluation successful');
+                logResult('instance-result', result);
+
+            } catch (error) {
+                log('instance-result', `✗ Instance method failed: ${error.message}`, true);
+            }
+        }
+
+        async function testAdvanced() {
+            const resultDiv = document.getElementById('advanced-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                const mathrok = new window.Mathrok.Mathrok();
+
+                // Test factoring
+                log('advanced-result', 'Testing factoring...');
+                const factorResult = await mathrok.factor('x^2 - 4');
+                log('advanced-result', '✓ Factoring successful');
+                logResult('advanced-result', factorResult);
+
+                // Test derivative
+                log('advanced-result', 'Testing derivative...');
+                const derivResult = await mathrok.derivative('x^3 + 2*x^2 + x', 'x');
+                log('advanced-result', '✓ Derivative successful');
+                logResult('advanced-result', derivResult);
+
+                // Test natural language
+                log('advanced-result', 'Testing natural language processing...');
+                const nlResult = await mathrok.nl('What is the derivative of x squared?');
+                log('advanced-result', '✓ Natural language processing successful');
+                logResult('advanced-result', nlResult);
+
+            } catch (error) {
+                log('advanced-result', `✗ Advanced test failed: ${error.message}`, true);
+                console.error('Advanced test error:', error);
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testConstructor();
+                setTimeout(() => {
+                    testInstance();
+                }, 1000);
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

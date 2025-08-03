@@ -6,9 +6,7 @@
  */
 
 // Import the library (Node.js)
-// const { Mathrok } = require('mathrok');
-
-// For browser, the library is already available as a global variable
+const { Mathrok } = require('mathrok');
 
 // Initialize the library
 const mathrok = new Mathrok();
@@ -18,9 +16,16 @@ function displaySteps(steps) {
     console.log('\nStep-by-Step Solution:');
     console.log('----------------------');
 
+    if (!steps || steps.length === 0) {
+        console.log('No steps available');
+        return;
+    }
+
     steps.forEach((step, index) => {
-        console.log(`Step ${index + 1}: ${step.text}`);
-        console.log(`Expression: ${step.expression}`);
+        console.log(`Step ${index + 1}: ${step.description || step.text || 'Unknown step'}`);
+        console.log(`Before: ${step.before || 'N/A'}`);
+        console.log(`After: ${step.after || step.expression || 'N/A'}`);
+        console.log(`Explanation: ${step.explanation || 'No explanation available'}`);
         console.log('');
     });
 }
@@ -31,12 +36,18 @@ function createStepsHTML(steps) {
     html += '<h3>Step-by-Step Solution:</h3>';
     html += '<ol class="steps-list">';
 
-    steps.forEach(step => {
-        html += `<li>
-      <div class="step-text">${step.text}</div>
-      <div class="step-expression">${mathrok.visualization.renderMath(step.expression, 'latex', true)}</div>
-    </li>`;
-    });
+    if (!steps || steps.length === 0) {
+        html += '<li>No steps available</li>';
+    } else {
+        steps.forEach(step => {
+            html += `<li>
+          <div class="step-text">${step.description || step.text || 'Unknown step'}</div>
+          <div class="step-before">Before: ${step.before || 'N/A'}</div>
+          <div class="step-after">After: ${step.after || step.expression || 'N/A'}</div>
+          <div class="step-explanation">${step.explanation || 'No explanation available'}</div>
+        </li>`;
+        });
+    }
 
     html += '</ol></div>';
     return html;
@@ -50,7 +61,7 @@ async function solveQuadratic() {
 
         const result = await mathrok.solve('x^2 - 4 = 0');
 
-        console.log(`Result: ${result.result}`);
+        console.log(`Result: ${JSON.stringify(result.result)}`);
         displaySteps(result.steps);
 
         // For browser display
@@ -75,7 +86,7 @@ async function calculateDerivative() {
 
         const result = await mathrok.derivative('sin(x) * x^2', 'x');
 
-        console.log(`Result: ${result.result}`);
+        console.log(`Result: ${result.result || JSON.stringify(result)}`);
         displaySteps(result.steps);
 
         // For browser display
@@ -100,7 +111,7 @@ async function calculateIntegral() {
 
         const result = await mathrok.integral('x^2', 'x');
 
-        console.log(`Result: ${result.result}`);
+        console.log(`Result: ${result.result || JSON.stringify(result)}`);
         displaySteps(result.steps);
 
         // For browser display
@@ -125,7 +136,7 @@ async function factorExpression() {
 
         const result = await mathrok.factor('x^3 - 8');
 
-        console.log(`Result: ${result.result}`);
+        console.log(`Result: ${result.result || JSON.stringify(result)}`);
         displaySteps(result.steps);
 
         // For browser display
@@ -142,27 +153,48 @@ async function factorExpression() {
     }
 }
 
-// Example 5: Solving a system of equations with steps
+// Example 5: Solving individual equations from a system
 async function solveSystem() {
     try {
         console.log('\nExample 5: Solving a system of equations');
         console.log('x + y = 10');
         console.log('x - y = 2');
 
-        const result = await mathrok.solveSystem(['x + y = 10', 'x - y = 2']);
+        // Solve the first equation
+        const result1 = await mathrok.solve('x + y - 10 = 0');
+        console.log(`First equation result: ${JSON.stringify(result1.result)}`);
+        displaySteps(result1.steps);
 
-        console.log(`Result: ${JSON.stringify(result.result)}`);
-        displaySteps(result.steps);
+        // Solve the second equation
+        const result2 = await mathrok.solve('x - y - 2 = 0');
+        console.log(`Second equation result: ${JSON.stringify(result2.result)}`);
+        displaySteps(result2.steps);
 
-        // For browser display
-        if (typeof document !== 'undefined') {
-            const container = document.getElementById('system-container');
-            if (container) {
-                container.innerHTML = createStepsHTML(result.steps);
-            }
+        // Note: For a complete system solution, you would typically use matrix operations
+        console.log('\nNote: For complete system solutions, use matrix operations:');
+        console.log('A = [[1, 1], [1, -1]], b = [10, 2]');
+
+        try {
+            const A = {
+                data: [[1, 1], [1, -1]],
+                rows: 2,
+                cols: 2
+            };
+            const b = {
+                data: [10, 2],
+                size: 2
+            };
+            const systemResult = mathrok.matrix.solveLinearSystem(A, b);
+            console.log(`System solution: x = ${systemResult.solution.data[0]}, y = ${systemResult.solution.data[1]}`);
+            console.log('Solution steps:');
+            systemResult.steps.forEach((step, index) => {
+                console.log(`  ${index + 1}. ${step}`);
+            });
+        } catch (matrixError) {
+            console.log('Matrix solution error:', matrixError.message);
         }
 
-        return result;
+        return { result1, result2 };
     } catch (error) {
         console.error('Error solving system of equations:', error);
     }

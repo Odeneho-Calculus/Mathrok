@@ -325,66 +325,7 @@ class Mathrok implements MathrokAPI {
         }
     };
 
-    /**
-     * Matrix operations with comprehensive linear algebra
-     */
-    public readonly matrix = {
-        /**
-         * Matrix addition with step-by-step explanation
-         */
-        add: (a: any, b: any) => {
-            return this.matrixEngine.add(a, b);
-        },
 
-        /**
-         * Matrix multiplication with step-by-step explanation
-         */
-        multiply: (a: any, b: any) => {
-            return this.matrixEngine.multiply(a, b);
-        },
-
-        /**
-         * Compute matrix determinant
-         */
-        determinant: (matrix: any) => {
-            return this.matrixEngine.determinant(matrix);
-        },
-
-        /**
-         * Compute matrix eigenvalues using QR algorithm
-         */
-        eigenvalues: (matrix: any) => {
-            return this.matrixEngine.eigenvalues(matrix);
-        },
-
-        /**
-         * Solve linear system Ax = b
-         */
-        solveLinearSystem: (A: any, b: any) => {
-            return this.matrixEngine.solveLinearSystem(A, b);
-        },
-
-        /**
-         * LU Decomposition
-         */
-        luDecomposition: (matrix: any) => {
-            return this.matrixEngine.luDecomposition(matrix);
-        },
-
-        /**
-         * QR Decomposition
-         */
-        qrDecomposition: (matrix: any) => {
-            return this.matrixEngine.qrDecomposition(matrix);
-        },
-
-        /**
-         * Matrix inversion using Gauss-Jordan elimination
-         */
-        inverse: (matrix: any) => {
-            return this.matrixEngine.inverse(matrix);
-        }
-    };
 
 
 
@@ -985,9 +926,17 @@ class Mathrok implements MathrokAPI {
         eigenvalues: (matrix: any) => {
             const startTime = getHighResolutionTime();
             try {
-                const result = this.matrixEngine.eigenvalues(matrix);
+                const eigenResult = this.matrixEngine.eigenvalues(matrix);
                 this.performanceTracker.recordOperation('matrix_eigenvalues', getHighResolutionTime() - startTime);
-                return result;
+                return {
+                    result: eigenResult.eigenvalues,
+                    steps: eigenResult.steps,
+                    metadata: {
+                        operation: 'matrix_eigenvalues',
+                        computationTime: getHighResolutionTime() - startTime,
+                        convergence: eigenResult.convergence
+                    }
+                };
             } catch (error) {
                 this.performanceTracker.recordError('matrix_eigenvalues', error as Error);
                 throw error;
@@ -1015,9 +964,21 @@ class Mathrok implements MathrokAPI {
         luDecomposition: (matrix: any) => {
             const startTime = getHighResolutionTime();
             try {
-                const result = this.matrixEngine.luDecomposition(matrix);
+                const decomposition = this.matrixEngine.luDecomposition(matrix);
                 this.performanceTracker.recordOperation('matrix_lu_decomposition', getHighResolutionTime() - startTime);
-                return result;
+                return {
+                    result: {
+                        L: decomposition.factors[0],
+                        U: decomposition.factors[1]
+                    },
+                    steps: decomposition.steps,
+                    metadata: {
+                        operation: 'lu_decomposition',
+                        computationTime: getHighResolutionTime() - startTime,
+                        determinant: decomposition.metadata.determinant,
+                        condition: decomposition.metadata.condition
+                    }
+                };
             } catch (error) {
                 this.performanceTracker.recordError('matrix_lu_decomposition', error as Error);
                 throw error;
@@ -1030,9 +991,20 @@ class Mathrok implements MathrokAPI {
         qrDecomposition: (matrix: any) => {
             const startTime = getHighResolutionTime();
             try {
-                const result = this.matrixEngine.qrDecomposition(matrix);
+                const decomposition = this.matrixEngine.qrDecomposition(matrix);
                 this.performanceTracker.recordOperation('matrix_qr_decomposition', getHighResolutionTime() - startTime);
-                return result;
+                return {
+                    result: {
+                        Q: decomposition.Q,
+                        R: decomposition.R
+                    },
+                    steps: [`QR decomposition completed for ${matrix.rows}×${matrix.cols} matrix`],
+                    metadata: {
+                        operation: 'qr_decomposition',
+                        computationTime: getHighResolutionTime() - startTime,
+                        method: 'gram_schmidt'
+                    }
+                };
             } catch (error) {
                 this.performanceTracker.recordError('matrix_qr_decomposition', error as Error);
                 throw error;
@@ -1045,9 +1017,16 @@ class Mathrok implements MathrokAPI {
         determinant: (matrix: any) => {
             const startTime = getHighResolutionTime();
             try {
-                const result = this.matrixEngine.determinant(matrix);
+                const determinantValue = this.matrixEngine.determinant(matrix);
                 this.performanceTracker.recordOperation('matrix_determinant', getHighResolutionTime() - startTime);
-                return result;
+                return {
+                    result: determinantValue,
+                    metadata: {
+                        operation: 'matrix_determinant',
+                        computationTime: getHighResolutionTime() - startTime,
+                        method: 'lu_decomposition'
+                    }
+                };
             } catch (error) {
                 this.performanceTracker.recordError('matrix_determinant', error as Error);
                 throw error;
@@ -1067,6 +1046,135 @@ class Mathrok implements MathrokAPI {
                 this.performanceTracker.recordError('matrix_inverse', error as Error);
                 throw error;
             }
+        },
+
+        /**
+         * Matrix subtraction with step-by-step explanation
+         */
+        subtract: (a: any, b: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.subtract(a, b);
+                this.performanceTracker.recordOperation('matrix_subtract', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_subtract', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Scalar multiplication with step-by-step explanation
+         */
+        scalarMultiply: (matrix: any, scalar: number) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.scalarMultiply(matrix, scalar);
+                this.performanceTracker.recordOperation('matrix_scalar_multiply', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_scalar_multiply', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Matrix transpose with step-by-step explanation
+         */
+        transpose: (matrix: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.transpose(matrix);
+                this.performanceTracker.recordOperation('matrix_transpose', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_transpose', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Matrix eigenvectors computation
+         */
+        eigenvectors: (matrix: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const eigenResult = this.matrixEngine.eigenvectors(matrix);
+                this.performanceTracker.recordOperation('matrix_eigenvectors', getHighResolutionTime() - startTime);
+                return {
+                    result: eigenResult.eigenvectors,
+                    eigenvalues: eigenResult.eigenvalues,
+                    steps: eigenResult.steps,
+                    metadata: {
+                        operation: 'matrix_eigenvectors',
+                        computationTime: getHighResolutionTime() - startTime,
+                        convergence: eigenResult.convergence
+                    }
+                };
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_eigenvectors', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Matrix power computation
+         */
+        power: (matrix: any, n: number) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.power(matrix, n);
+                this.performanceTracker.recordOperation('matrix_power', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_power', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Matrix trace computation
+         */
+        trace: (matrix: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.trace(matrix);
+                this.performanceTracker.recordOperation('matrix_trace', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_trace', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Matrix rank computation
+         */
+        rank: (matrix: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.rank(matrix);
+                this.performanceTracker.recordOperation('matrix_rank', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_rank', error as Error);
+                throw error;
+            }
+        },
+
+        /**
+         * Solve linear system Ax = b
+         */
+        solve: (A: any, b: any) => {
+            const startTime = getHighResolutionTime();
+            try {
+                const result = this.matrixEngine.solve(A, b);
+                this.performanceTracker.recordOperation('matrix_solve', getHighResolutionTime() - startTime);
+                return result;
+            } catch (error) {
+                this.performanceTracker.recordError('matrix_solve', error as Error);
+                throw error;
+            }
         }
     };
 
@@ -1082,7 +1190,14 @@ class Mathrok implements MathrokAPI {
             try {
                 const result = this.statisticsEngine.descriptiveStats(data);
                 this.performanceTracker.recordOperation('stats_descriptive', getHighResolutionTime() - startTime);
-                return result;
+                return {
+                    result,
+                    metadata: {
+                        computationTime: getHighResolutionTime() - startTime,
+                        method: 'descriptive_statistics',
+                        confidence: 1.0
+                    }
+                };
             } catch (error) {
                 this.performanceTracker.recordError('stats_descriptive', error as Error);
                 throw error;

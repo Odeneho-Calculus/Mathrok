@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Advanced Mathrok Features</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .result-data {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Testing Advanced Mathrok Features</h1>
+    <div id="output"></div>
+
+    <!-- Include Mathrok library -->
+    <script src="../../dist/mathrok.umd.js"></script>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function logResult(message, isSuccess = true, data = null) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.innerHTML = `<strong>${message}</strong>`;
+
+            if (data) {
+                const dataDiv = document.createElement('div');
+                dataDiv.className = 'result-data';
+                dataDiv.textContent = JSON.stringify(data, null, 2);
+                div.appendChild(dataDiv);
+            }
+
+            output.appendChild(div);
+            console.log(message, data);
+        }
+
+        async function runTests() {
+            try {
+                // Initialize Mathrok
+                const mathrok = new window.Mathrok.Mathrok();
+                logResult('✓ Mathrok instance created successfully');
+
+                // Test 1: Basic evaluation
+                try {
+                    const result1 = await mathrok.evaluate('2^3 + 4*5');
+                    logResult('✓ Basic evaluation test passed', true, result1);
+                } catch (error) {
+                    logResult('✗ Basic evaluation test failed: ' + error.message, false);
+                }
+
+                // Test 2: Factoring
+                try {
+                    const result2 = await mathrok.factor('x^2 - 4');
+                    logResult('✓ Factoring test passed', true, result2);
+                } catch (error) {
+                    logResult('✗ Factoring test failed: ' + error.message, false);
+                }
+
+                // Test 3: Derivative
+                try {
+                    const result3 = await mathrok.derivative('x^3 + 2*x^2 + x', 'x');
+                    logResult('✓ Derivative test passed', true, result3);
+                } catch (error) {
+                    logResult('✗ Derivative test failed: ' + error.message, false);
+                }
+
+                // Test 4: Simplification
+                try {
+                    const result4 = await mathrok.simplify('(x+1)^2');
+                    logResult('✓ Simplification test passed', true, result4);
+                } catch (error) {
+                    logResult('✗ Simplification test failed: ' + error.message, false);
+                }
+
+                // Test 5: Expansion
+                try {
+                    const result5 = await mathrok.expand('(x+2)(x-2)');
+                    logResult('✓ Expansion test passed', true, result5);
+                } catch (error) {
+                    logResult('✗ Expansion test failed: ' + error.message, false);
+                }
+
+                // Test 6: Natural Language (if available)
+                try {
+                    const result6 = await mathrok.nl('What is 2 plus 3?');
+                    logResult('✓ Natural language test passed', true, result6);
+                } catch (error) {
+                    logResult('✗ Natural language test failed: ' + error.message, false);
+                }
+
+            } catch (error) {
+                logResult('✗ Failed to initialize Mathrok: ' + error.message, false);
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 100);
+        });
+    </script>
+</body>
+
+</html>

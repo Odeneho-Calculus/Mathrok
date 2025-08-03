@@ -1,286 +1,218 @@
 /**
- * Voice Input Example
+ * Voice Input Example (Node.js Compatible)
  *
  * This example demonstrates how to use voice input for mathematical expressions
- * using the Mathrok library.
+ * using the Mathrok library. Since this is running in Node.js, we'll simulate
+ * voice input with predefined text examples.
  *
- * Note: This example is designed to run in a browser environment that supports
- * the Web Speech API (Chrome, Edge, etc.)
+ * In a browser environment, this would use the Web Speech API.
  */
 
-// Initialize the library (the library should be included in your HTML)
+// Import the library (Node.js)
+const { Mathrok } = require('mathrok');
+
+// Initialize the library
 const mathrok = new Mathrok();
 
-// Create UI elements
-function createUI() {
-    // Create main container
-    const container = document.createElement('div');
-    container.className = 'voice-calculator';
-    container.style.maxWidth = '800px';
-    container.style.margin = '0 auto';
-    container.style.padding = '20px';
-    container.style.fontFamily = 'Arial, sans-serif';
-    document.body.appendChild(container);
+// Simulated voice input examples (what would come from speech recognition)
+const voiceInputExamples = [
+    "solve x squared minus four equals zero",
+    "what is the derivative of sine x times x squared",
+    "integrate x squared with respect to x",
+    "factor x cubed minus eight",
+    "what is two plus three times four",
+    "find the limit of sine x over x as x approaches zero",
+    "solve the quadratic equation x squared plus five x plus six equals zero"
+];
 
-    // Create title
-    const title = document.createElement('h1');
-    title.textContent = 'Mathrok Voice Calculator';
-    container.appendChild(title);
+// Voice-to-math text conversion (simulating speech recognition + NLP)
+async function processVoiceInput(voiceText) {
+    console.log(`\n🎤 Voice Input: "${voiceText}"`);
+    console.log('🔄 Processing natural language...');
 
-    // Create description
-    const description = document.createElement('p');
-    description.textContent = 'Click the microphone button and speak a mathematical expression or question.';
-    container.appendChild(description);
-
-    // Create status display
-    const status = document.createElement('div');
-    status.id = 'status';
-    status.textContent = 'Ready';
-    status.style.margin = '20px 0';
-    status.style.padding = '10px';
-    status.style.backgroundColor = '#f0f0f0';
-    status.style.borderRadius = '5px';
-    status.style.textAlign = 'center';
-    container.appendChild(status);
-
-    // Create microphone button
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.textAlign = 'center';
-    buttonContainer.style.margin = '20px 0';
-    container.appendChild(buttonContainer);
-
-    const micButton = document.createElement('button');
-    micButton.id = 'mic-button';
-    micButton.innerHTML = '🎤 Start Listening';
-    micButton.style.padding = '15px 30px';
-    micButton.style.fontSize = '18px';
-    micButton.style.backgroundColor = '#4CAF50';
-    micButton.style.color = 'white';
-    micButton.style.border = 'none';
-    micButton.style.borderRadius = '5px';
-    micButton.style.cursor = 'pointer';
-    buttonContainer.appendChild(micButton);
-
-    // Create output container
-    const outputContainer = document.createElement('div');
-    outputContainer.style.margin = '20px 0';
-    container.appendChild(outputContainer);
-
-    // Create recognized text display
-    const recognizedContainer = document.createElement('div');
-    recognizedContainer.style.margin = '20px 0';
-    outputContainer.appendChild(recognizedContainer);
-
-    const recognizedLabel = document.createElement('h3');
-    recognizedLabel.textContent = 'Recognized Text:';
-    recognizedContainer.appendChild(recognizedLabel);
-
-    const recognizedText = document.createElement('div');
-    recognizedText.id = 'recognized-text';
-    recognizedText.style.padding = '10px';
-    recognizedText.style.border = '1px solid #ddd';
-    recognizedText.style.borderRadius = '5px';
-    recognizedText.style.minHeight = '50px';
-    recognizedContainer.appendChild(recognizedText);
-
-    // Create result display
-    const resultContainer = document.createElement('div');
-    resultContainer.style.margin = '20px 0';
-    outputContainer.appendChild(resultContainer);
-
-    const resultLabel = document.createElement('h3');
-    resultLabel.textContent = 'Result:';
-    resultContainer.appendChild(resultLabel);
-
-    const resultText = document.createElement('div');
-    resultText.id = 'result-text';
-    resultText.style.padding = '10px';
-    resultText.style.border = '1px solid #ddd';
-    resultText.style.borderRadius = '5px';
-    resultText.style.minHeight = '50px';
-    resultText.style.fontWeight = 'bold';
-    resultContainer.appendChild(resultText);
-
-    // Create visualization container
-    const visualContainer = document.createElement('div');
-    visualContainer.style.margin = '20px 0';
-    outputContainer.appendChild(visualContainer);
-
-    const visualLabel = document.createElement('h3');
-    visualLabel.textContent = 'Visualization:';
-    visualContainer.appendChild(visualLabel);
-
-    const graphContainer = document.createElement('div');
-    graphContainer.id = 'graph-container';
-    graphContainer.style.width = '100%';
-    graphContainer.style.height = '300px';
-    graphContainer.style.border = '1px solid #ddd';
-    graphContainer.style.borderRadius = '5px';
-    visualContainer.appendChild(graphContainer);
-
-    // Create speak button
-    const speakButton = document.createElement('button');
-    speakButton.id = 'speak-button';
-    speakButton.innerHTML = '🔊 Speak Result';
-    speakButton.style.padding = '10px 20px';
-    speakButton.style.fontSize = '16px';
-    speakButton.style.backgroundColor = '#2196F3';
-    speakButton.style.color = 'white';
-    speakButton.style.border = 'none';
-    speakButton.style.borderRadius = '5px';
-    speakButton.style.cursor = 'pointer';
-    speakButton.style.marginRight = '10px';
-    speakButton.disabled = true;
-    buttonContainer.appendChild(speakButton);
-
-    // Return references to the elements we need to access
-    return {
-        status,
-        micButton,
-        recognizedText,
-        resultText,
-        graphContainer,
-        speakButton
-    };
+    // Convert voice text to mathematical expression using NLP
+    return await mathrok.nl(voiceText);
 }
 
-// Main application logic
-function initVoiceCalculator() {
-    // Create UI
-    const ui = createUI();
+// Process a single voice input example
+async function processVoiceExample(voiceText) {
+    try {
+        console.log('='.repeat(60));
 
-    // Check if voice is supported
-    const support = mathrok.voice.isSupported();
-    if (!support.input) {
-        ui.status.textContent = 'Voice input is not supported in this browser';
-        ui.status.style.backgroundColor = '#ffcccc';
-        ui.micButton.disabled = true;
-        return;
-    }
+        // Step 1: Process voice input with NLP
+        const nlpResult = await processVoiceInput(voiceText);
 
-    // Function to handle voice input
-    async function handleVoiceInput() {
-        try {
-            // Update UI
-            ui.status.textContent = 'Listening...';
-            ui.status.style.backgroundColor = '#ccffcc';
-            ui.micButton.disabled = true;
-            ui.micButton.innerHTML = '🎤 Listening...';
+        console.log(`📝 Interpreted as: ${nlpResult.expression}`);
+        console.log(`🎯 Intent: ${nlpResult.intent}`);
 
-            // Clear previous results
-            ui.recognizedText.textContent = '';
-            ui.resultText.textContent = '';
-            ui.graphContainer.innerHTML = '';
-            ui.speakButton.disabled = true;
-
-            // Start listening
-            const voiceResult = await mathrok.voice.listen();
-
-            // Display recognized text
-            ui.recognizedText.textContent = voiceResult.text;
-            ui.status.textContent = `Processing: "${voiceResult.text}"`;
-
-            // Process the natural language query
-            const result = await mathrok.nl(voiceResult.text);
-
-            // Display the result
-            ui.resultText.textContent = result.result;
-            ui.status.textContent = 'Ready';
-            ui.status.style.backgroundColor = '#f0f0f0';
-
-            // Try to visualize the result if it's a plottable expression
-            try {
-                if (result.expression) {
-                    mathrok.visualization.plot2D(ui.graphContainer, result.expression, 'x');
-                }
-            } catch (visualError) {
-                console.warn('Visualization error:', visualError);
-                // Not all results can be visualized, so we just ignore errors
-            }
-
-            // Enable speak button if speech output is supported
-            if (support.output) {
-                ui.speakButton.disabled = false;
-            }
-
-            // Reset microphone button
-            ui.micButton.disabled = false;
-            ui.micButton.innerHTML = '🎤 Start Listening';
-
-        } catch (error) {
-            console.error('Voice input error:', error);
-
-            // Update UI to show error
-            ui.status.textContent = `Error: ${error.message}`;
-            ui.status.style.backgroundColor = '#ffcccc';
-
-            // Reset microphone button
-            ui.micButton.disabled = false;
-            ui.micButton.innerHTML = '🎤 Start Listening';
+        // Step 2: Execute the mathematical operation
+        let result;
+        switch (nlpResult.intent) {
+            case 'solve_equation':
+                result = await mathrok.solve(nlpResult.expression);
+                break;
+            case 'calculate_derivative':
+                result = await mathrok.derivative(nlpResult.expression, 'x');
+                break;
+            case 'calculate_integral':
+                result = await mathrok.integral(nlpResult.expression, 'x');
+                break;
+            case 'factor_expression':
+                result = await mathrok.factor(nlpResult.expression);
+                break;
+            case 'evaluate_expression':
+                result = await mathrok.evaluate(nlpResult.expression);
+                break;
+            case 'calculate_limit':
+                result = await mathrok.limit(nlpResult.expression, 'x', 0);
+                break;
+            default:
+                result = await mathrok.evaluate(nlpResult.expression);
         }
-    }
 
-    // Function to speak the result
-    async function speakResult() {
-        try {
-            // Update UI
-            ui.status.textContent = 'Speaking...';
-            ui.speakButton.disabled = true;
+        // Step 3: Display results
+        console.log(`✅ Result: ${result.result || JSON.stringify(result)}`);
 
-            // Get the recognized text and result
-            const query = ui.recognizedText.textContent;
-            const result = ui.resultText.textContent;
+        // Step 4: Generate voice output (text-to-speech simulation)
+        const voiceResponse = generateVoiceResponse(nlpResult, result);
+        console.log(`🔊 Voice Response: "${voiceResponse}"`);
 
-            // Speak the result
-            await mathrok.voice.speak(`The result of ${query} is ${result}`);
-
-            // Reset UI
-            ui.status.textContent = 'Ready';
-            ui.speakButton.disabled = false;
-        } catch (error) {
-            console.error('Speech error:', error);
-
-            // Update UI to show error
-            ui.status.textContent = `Speech error: ${error.message}`;
-            ui.status.style.backgroundColor = '#ffcccc';
-            ui.speakButton.disabled = false;
+        // Step 5: Show steps if available
+        if (result.steps && result.steps.length > 0) {
+            console.log('\n📚 Step-by-step explanation:');
+            result.steps.forEach((step, index) => {
+                console.log(`   ${index + 1}. ${step.description || step.explanation || step}`);
+            });
         }
-    }
 
-    // Set up event listeners
-    ui.micButton.addEventListener('click', handleVoiceInput);
-    ui.speakButton.addEventListener('click', speakResult);
+        return { nlpResult, result, voiceResponse };
 
-    // Disable speak button if speech output is not supported
-    if (!support.output) {
-        ui.speakButton.disabled = true;
-        ui.speakButton.title = 'Speech output is not supported in this browser';
+    } catch (error) {
+        console.error(`❌ Error processing voice input: ${error.message}`);
+        const errorResponse = `I'm sorry, I couldn't process that mathematical expression. ${error.message}`;
+        console.log(`🔊 Voice Response: "${errorResponse}"`);
+        return { error: error.message, voiceResponse: errorResponse };
     }
 }
 
-// Initialize the application when the page loads
-window.addEventListener('DOMContentLoaded', initVoiceCalculator);
+// Generate natural language response for text-to-speech
+function generateVoiceResponse(nlpResult, result) {
+    const intent = nlpResult.intent;
+    const expression = nlpResult.expression;
 
-/**
- * HTML Template for this example:
- *
- * <!DOCTYPE html>
- * <html>
- * <head>
- *   <title>Mathrok Voice Calculator</title>
- *   <script src="https://cdn.jsdelivr.net/npm/mathrok@1.1.0/dist/mathrok.umd.js"></script>
- *   <script src="voice-input.js"></script>
- * </head>
- * <body>
- *   <!-- Content will be dynamically generated by the script -->
- * </body>
- * </html>
- *
- * Example voice commands to try:
- * - "What is the derivative of x squared?"
- * - "Solve x squared minus 4 equals 0"
- * - "Calculate the integral of sine of x"
- * - "Factor x squared minus 9"
- * - "Simplify 2x plus 3x plus 4"
- * - "Plot sine of x"
- */
+    switch (intent) {
+        case 'solve_equation':
+            if (Array.isArray(result.result)) {
+                const solutions = result.result.map(sol => sol.value || sol).join(', ');
+                return `The solution to ${expression} is ${solutions}`;
+            }
+            return `The solution to ${expression} is ${result.result}`;
+
+        case 'calculate_derivative':
+            return `The derivative of ${expression} is ${result.result}`;
+
+        case 'calculate_integral':
+            return `The integral of ${expression} is ${result.result}`;
+
+        case 'factor_expression':
+            return `The factored form of ${expression} is ${result.result}`;
+
+        case 'evaluate_expression':
+            return `${expression} equals ${result.result || result}`;
+
+        case 'calculate_limit':
+            return `The limit of ${expression} is ${result.result}`;
+
+        default:
+            return `The result is ${result.result || JSON.stringify(result)}`;
+    }
+}
+
+// Run all voice input examples
+async function runVoiceExamples() {
+    console.log('🎙️  MATHROK VOICE INPUT DEMONSTRATION');
+    console.log('=====================================');
+    console.log('Simulating voice input with natural language processing...\n');
+
+    for (let i = 0; i < voiceInputExamples.length; i++) {
+        await processVoiceExample(voiceInputExamples[i]);
+
+        // Add a small delay between examples
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    console.log('\n🎉 Voice input demonstration completed!');
+    console.log('\nIn a browser environment, this would use:');
+    console.log('• Web Speech API for speech-to-text');
+    console.log('• Mathrok NLP for natural language processing');
+    console.log('• Web Speech Synthesis API for text-to-speech');
+}
+
+// Additional voice features demonstration
+async function demonstrateVoiceFeatures() {
+    console.log('\n🔧 VOICE FEATURES DEMONSTRATION');
+    console.log('===============================');
+
+    // Test voice configuration
+    console.log('\n1. Voice Configuration:');
+    try {
+        const voiceSupport = mathrok.voice.isSupported();
+        console.log('   • Input supported:', voiceSupport.input);
+        console.log('   • Output supported:', voiceSupport.output);
+
+        const voices = mathrok.voice.getVoices();
+        console.log('   • Available voices:', voices.length || 'None in Node.js environment');
+    } catch (error) {
+        console.log('   • Voice configuration not available in Node.js environment');
+    }
+
+    // Test voice commands
+    console.log('\n2. Supported Voice Commands:');
+    const commands = [
+        'solve [equation]',
+        'find the derivative of [expression]',
+        'integrate [expression]',
+        'factor [expression]',
+        'what is [expression]',
+        'calculate [expression]',
+        'find the limit of [expression]'
+    ];
+
+    commands.forEach(command => {
+        console.log(`   • "${command}"`);
+    });
+
+    // Test mathematical vocabulary
+    console.log('\n3. Mathematical Vocabulary Recognition:');
+    const vocabulary = [
+        'squared → ^2',
+        'cubed → ^3',
+        'sine → sin',
+        'cosine → cos',
+        'tangent → tan',
+        'natural log → ln',
+        'square root → sqrt',
+        'plus → +',
+        'minus → -',
+        'times → *',
+        'divided by → /',
+        'equals → ='
+    ];
+
+    vocabulary.forEach(vocab => {
+        console.log(`   • ${vocab}`);
+    });
+}
+
+// Main execution
+async function main() {
+    try {
+        await runVoiceExamples();
+        await demonstrateVoiceFeatures();
+    } catch (error) {
+        console.error('Error in voice demonstration:', error);
+    }
+}
+
+// Run the demonstration
+main();

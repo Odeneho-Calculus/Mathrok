@@ -26,11 +26,15 @@ import { TrigonometryEngine } from './trigonometry.js';
 import { MathSolver } from '../solver/index.js';
 import { getHighResolutionTime } from '../../utils/performance/timer.js';
 
-// Use require for Nerdamer to ensure proper module loading
-const nerdamer = require('nerdamer');
-require('nerdamer/Calculus');
-require('nerdamer/Algebra');
-require('nerdamer/Solve');
+// Import mathematical libraries with proper ES6 imports for browser compatibility
+import nerdamer from 'nerdamer';
+import 'nerdamer/Calculus';
+import 'nerdamer/Algebra';
+import 'nerdamer/Solve';
+import * as Algebrite from 'algebrite';
+import * as math from 'mathjs';
+import Decimal from 'decimal.js';
+import Fraction from 'fraction.js';
 
 /**
  * Core mathematical engine implementation
@@ -255,15 +259,47 @@ export class MathEngine {
 
     private differentiateAST(ast: any, variable: string): any {
         try {
-            // Convert AST back to expression string for Nerdamer
+            // Convert AST back to expression string
             const expression = this.astToExpression(ast);
+            let result = '';
 
-            // Use Nerdamer to compute the derivative
-            const derivative = nerdamer(`diff(${expression}, ${variable})`);
+            // Try multiple libraries for best derivative computation
+            // First try Algebrite
+            try {
+                const algebraicResult = Algebrite.run(`derivative(${expression}, ${variable})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (!result) {
+                try {
+                    const derivative = nerdamer(`diff(${expression}, ${variable})`);
+                    result = derivative.toString();
+                } catch (e) {
+                    // Continue to next method
+                }
+            }
+
+            // If still no result, try Math.js
+            if (!result) {
+                try {
+                    const mathResult = math.derivative(expression, variable);
+                    if (mathResult) {
+                        result = mathResult.toString();
+                    }
+                } catch (e) {
+                    // Final fallback
+                    result = `d/d${variable}(${expression})`;
+                }
+            }
 
             return {
-                toString: () => derivative.toString(),
-                nerdamerResult: derivative,
+                toString: () => result,
+                result: result,
             };
         } catch (error) {
             // Fallback to basic symbolic representation
@@ -275,15 +311,35 @@ export class MathEngine {
 
     private integrateAST(ast: any, variable: string): any {
         try {
-            // Convert AST back to expression string for Nerdamer
+            // Convert AST back to expression string
             const expression = this.astToExpression(ast);
+            let result = '';
 
-            // Use Nerdamer to compute the integral
-            const integral = nerdamer(`integrate(${expression}, ${variable})`);
+            // Try multiple libraries for best integration computation
+            // First try Algebrite
+            try {
+                const algebraicResult = Algebrite.run(`integral(${expression}, ${variable})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (!result) {
+                try {
+                    const integral = nerdamer(`integrate(${expression}, ${variable})`);
+                    result = integral.toString();
+                } catch (e) {
+                    // Final fallback
+                    result = `∫${expression} d${variable}`;
+                }
+            }
 
             return {
-                toString: () => integral.toString(),
-                nerdamerResult: integral,
+                toString: () => result,
+                result: result,
             };
         } catch (error) {
             // Fallback to basic symbolic representation
@@ -295,15 +351,37 @@ export class MathEngine {
 
     private factorAST(ast: any): any {
         try {
-            // Convert AST back to expression string for Nerdamer
+            // Convert AST back to expression string
             const expression = this.astToExpression(ast);
+            let result = expression;
 
-            // Use Nerdamer to factor the expression
-            const factored = nerdamer(`factor(${expression})`);
+            // Try multiple libraries for best factoring
+            // First try Algebrite
+            try {
+                const algebraicResult = Algebrite.run(`factor(${expression})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (result === expression) {
+                try {
+                    const factored = nerdamer(`factor(${expression})`);
+                    const factoredStr = factored.toString();
+                    if (factoredStr && factoredStr !== expression) {
+                        result = factoredStr;
+                    }
+                } catch (e) {
+                    // Use original expression
+                }
+            }
 
             return {
-                toString: () => factored.toString(),
-                nerdamerResult: factored,
+                toString: () => result,
+                result: result,
             };
         } catch (error) {
             // Fallback to original expression
@@ -313,15 +391,37 @@ export class MathEngine {
 
     private expandAST(ast: any): any {
         try {
-            // Convert AST back to expression string for Nerdamer
+            // Convert AST back to expression string
             const expression = this.astToExpression(ast);
+            let result = expression;
 
-            // Use Nerdamer to expand the expression
-            const expanded = nerdamer(`expand(${expression})`);
+            // Try multiple libraries for best expansion
+            // First try Algebrite
+            try {
+                const algebraicResult = Algebrite.run(`expand(${expression})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (result === expression) {
+                try {
+                    const expanded = nerdamer(`expand(${expression})`);
+                    const expandedStr = expanded.toString();
+                    if (expandedStr && expandedStr !== expression) {
+                        result = expandedStr;
+                    }
+                } catch (e) {
+                    // Use original expression
+                }
+            }
 
             return {
-                toString: () => expanded.toString(),
-                nerdamerResult: expanded,
+                toString: () => result,
+                result: result,
             };
         } catch (error) {
             // Fallback to original expression
@@ -331,9 +431,46 @@ export class MathEngine {
 
     private async simplifyExpression(expression: string): Promise<string> {
         try {
-            // Use Nerdamer to simplify the expression
-            const simplified = nerdamer(expression).simplify();
-            return simplified.toString();
+            // Try multiple libraries for best simplification
+            let result = expression;
+
+            // First try Algebrite
+            try {
+                const algebraicResult = Algebrite.run(`simplify(${expression})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (result === expression) {
+                try {
+                    const simplified = nerdamer(expression).simplify();
+                    const simplifiedStr = simplified.toString();
+                    if (simplifiedStr && simplifiedStr !== expression) {
+                        result = simplifiedStr;
+                    }
+                } catch (e) {
+                    // Continue to next method
+                }
+            }
+
+            // If still no result, try Math.js
+            if (result === expression) {
+                try {
+                    const mathResult = math.simplify(expression);
+                    if (mathResult && mathResult.toString() !== expression) {
+                        result = mathResult.toString();
+                    }
+                } catch (e) {
+                    // Final fallback to basic string cleanup
+                    result = expression.replace(/\s+/g, ' ').trim();
+                }
+            }
+
+            return result;
         } catch (error) {
             // Fallback to basic string cleanup
             return expression.replace(/\s+/g, ' ').trim();

@@ -14,14 +14,17 @@ import type {
     DerivativeResult,
     IntegralResult,
     IntegralConfig,
-    IntegrationMethod,
 } from '../../types/api.js';
 import { MathError, MathErrorType } from '../../types/core.js';
 
-// Use require for Nerdamer to ensure proper module loading
-const nerdamer = require('nerdamer');
-require('nerdamer/Calculus');
-require('nerdamer/Algebra');
+// Import mathematical libraries with proper ES6 imports for browser compatibility
+import nerdamer from 'nerdamer';
+import 'nerdamer/Calculus';
+import 'nerdamer/Algebra';
+import * as Algebrite from 'algebrite';
+import * as math from 'mathjs';
+import Decimal from 'decimal.js';
+import Fraction from 'fraction.js';
 
 /**
  * Advanced calculus operations engine
@@ -160,7 +163,7 @@ export class CalculusEngine {
                     computationTime: performance.now() - startTime,
                     method: `advanced_${method.toLowerCase()}_integration`,
                     confidence,
-                    isExact: method !== IntegrationMethod.NUMERICAL,
+                    isExact: method !== 'numerical',
                 },
                 variable,
                 isDefinite: finalConfig.definite || false,
@@ -248,9 +251,46 @@ export class CalculusEngine {
         const startTime = performance.now();
 
         try {
-            // Use Nerdamer to compute partial derivative
-            const partial = nerdamer(`diff(${expression}, ${variable})`);
-            const result = partial.toString();
+            // Try multiple libraries for best derivative computation
+            let result = '';
+            let method = 'nerdamer';
+
+            // First try Algebrite for advanced symbolic differentiation
+            try {
+                const algebraicResult = Algebrite.run(`derivative(${expression}, ${variable})`);
+                if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                    result = algebraicResult;
+                    method = 'algebrite';
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (!result) {
+                try {
+                    const partial = nerdamer(`diff(${expression}, ${variable})`);
+                    result = partial.toString();
+                    method = 'nerdamer';
+                } catch (e) {
+                    // Continue to next method
+                }
+            }
+
+            // If still no result, try Math.js
+            if (!result) {
+                try {
+                    const mathResult = math.derivative(expression, variable);
+                    if (mathResult) {
+                        result = mathResult.toString();
+                        method = 'mathjs';
+                    }
+                } catch (e) {
+                    // Final fallback
+                    result = `d/d${variable}(${expression})`;
+                    method = 'symbolic';
+                }
+            }
 
             const steps: SolutionStep[] = [
                 {
@@ -432,29 +472,29 @@ export class CalculusEngine {
         }
     }
 
-    private selectOptimalIntegrationMethod(analysis: any): IntegrationMethod {
+    private selectOptimalIntegrationMethod(analysis: any): string {
         if (analysis.isPolynomial) {
-            return IntegrationMethod.AUTO;
+            return 'auto';
         }
         if (analysis.needsSubstitution) {
-            return IntegrationMethod.SUBSTITUTION;
+            return 'substitution';
         }
         if (analysis.needsIntegrationByParts) {
-            return IntegrationMethod.PARTS;
+            return 'parts';
         }
         if (analysis.isRational) {
-            return IntegrationMethod.PARTIAL_FRACTIONS;
+            return 'partial_fractions';
         }
         if (analysis.hasTrigFunctions) {
-            return IntegrationMethod.TRIGONOMETRIC;
+            return 'trigonometric';
         }
-        return IntegrationMethod.AUTO;
+        return 'auto';
     }
 
     private async applyIntegrationMethod(
         expression: string,
         variable: string,
-        method: IntegrationMethod,
+        method: string,
         analysis: any
     ): Promise<{ integral: string; steps: SolutionStep[]; confidence: number }> {
         const steps: SolutionStep[] = [];
@@ -464,7 +504,7 @@ export class CalculusEngine {
             let integral: string;
 
             switch (method) {
-                case IntegrationMethod.SUBSTITUTION:
+                case 'substitution':
                     integral = await this.integrateBySubstitution(expression, variable);
                     steps.push({
                         id: 'integration_by_substitution',
@@ -476,7 +516,7 @@ export class CalculusEngine {
                     });
                     break;
 
-                case IntegrationMethod.PARTS:
+                case 'parts':
                     integral = await this.integrateByParts(expression, variable);
                     steps.push({
                         id: 'integration_by_parts',
@@ -488,7 +528,7 @@ export class CalculusEngine {
                     });
                     break;
 
-                case IntegrationMethod.PARTIAL_FRACTIONS:
+                case 'partial_fractions':
                     integral = await this.integrateByPartialFractions(expression, variable);
                     steps.push({
                         id: 'partial_fractions_integration',
@@ -500,7 +540,7 @@ export class CalculusEngine {
                     });
                     break;
 
-                case IntegrationMethod.TRIGONOMETRIC:
+                case 'trigonometric':
                     integral = await this.integrateTrigonometric(expression, variable);
                     steps.push({
                         id: 'trigonometric_integration',
@@ -512,7 +552,7 @@ export class CalculusEngine {
                     });
                     break;
 
-                case IntegrationMethod.NUMERICAL:
+                case 'numerical':
                     integral = await this.integrateNumerically(expression, variable);
                     confidence = 0.7; // Lower confidence for numerical methods
                     steps.push({
@@ -526,16 +566,44 @@ export class CalculusEngine {
                     break;
 
                 default:
-                    // AUTO method - let Nerdamer choose
-                    const result = nerdamer(`integrate(${expression}, ${variable})`);
-                    integral = result.toString();
+                    // AUTO method - try multiple libraries for best result
+                    let integrationMethod = 'nerdamer';
+
+                    // First try Algebrite for advanced symbolic integration
+                    try {
+                        const algebraicResult = Algebrite.run(`integral(${expression}, ${variable})`);
+                        if (algebraicResult && !algebraicResult.includes('Stop') && algebraicResult !== expression) {
+                            integral = algebraicResult;
+                            integrationMethod = 'algebrite';
+                        }
+                    } catch (e) {
+                        // Continue to next method
+                    }
+
+                    // If Algebrite didn't work, try Nerdamer
+                    if (!integral) {
+                        try {
+                            const result = nerdamer(`integrate(${expression}, ${variable})`);
+                            integral = result.toString();
+                            integrationMethod = 'nerdamer';
+                        } catch (e) {
+                            // Continue to next method
+                        }
+                    }
+
+                    // If still no result, provide symbolic representation
+                    if (!integral) {
+                        integral = `∫${expression} d${variable}`;
+                        integrationMethod = 'symbolic';
+                    }
+
                     steps.push({
                         id: 'automatic_integration',
-                        description: 'Apply automatic integration',
+                        description: `Apply automatic integration using ${integrationMethod}`,
                         operation: MathOperation.INTEGRATION,
                         before: expression,
                         after: integral,
-                        explanation: 'Used automatic method selection for integration',
+                        explanation: `Used ${integrationMethod} for integration computation`,
                     });
                     break;
             }

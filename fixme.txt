@@ -1,0 +1,179 @@
+Testing Advanced Mathrok Features
+✓ Mathrok instance created successfully
+✓ Basic evaluation test passed
+{
+  "result": 28,
+  "steps": [
+    {
+      "id": "evaluate",
+      "description": "Evaluate the expression",
+      "operation": "evaluation",
+      "before": "2^3 + 4*5",
+      "after": "28",
+      "explanation": "Evaluated expression numerically"
+    }
+  ],
+  "metadata": {
+    "computationTime": 1.9000000357627869,
+    "method": "numeric_evaluation",
+    "confidence": 1,
+    "isExact": true
+  },
+  "isNumerical": true
+}
+✓ Factoring test passed
+{
+  "result": "(-2+x)*(2+x)",
+  "steps": [
+    {
+      "id": "basic_factor",
+      "description": "Factor the expression",
+      "operation": "factoring",
+      "before": "x^2 - 4",
+      "after": "(-2+x)*(2+x)",
+      "explanation": "Applied basic factoring techniques"
+    }
+  ],
+  "metadata": {
+    "computationTime": 9.599999964237213,
+    "method": "basic_symbolic_factoring",
+    "confidence": 0.95,
+    "isExact": true
+  },
+  "factors": [
+    {
+      "expression": "(-2+x)*(2+x)",
+      "multiplicity": 1,
+      "type": "IRREDUCIBLE"
+    }
+  ],
+  "method": "COMMON_FACTOR"
+}
+✓ Derivative test passed
+{
+  "result": "3*x^2+4*x+1",
+  "steps": [
+    {
+      "id": "basic_differentiate",
+      "description": "Differentiate with respect to x",
+      "operation": "differentiation",
+      "before": "x^3 + 2*x^2 + x",
+      "after": "3*x^2 + 4*x + 1",
+      "explanation": "Applied basic differentiation rules"
+    },
+    {
+      "id": "simplify_derivative",
+      "description": "Simplify the derivative",
+      "operation": "simplification",
+      "before": "3*x^2 + 4*x + 1",
+      "after": "3*x^2+4*x+1",
+      "explanation": "Applied algebraic simplification to the derivative"
+    }
+  ],
+  "metadata": {
+    "computationTime": 33,
+    "method": "basic_symbolic_differentiation",
+    "confidence": 1,
+    "isExact": true
+  },
+  "variable": "x",
+  "order": 1,
+  "rulesApplied": [
+    "basic_differentiation"
+  ]
+}
+✓ Simplification test passed
+{
+  "result": "x^2+2*x+1",
+  "steps": [
+    {
+      "id": "basic_simplify",
+      "description": "Simplify the expression",
+      "operation": "simplification",
+      "before": "(x+1)^2",
+      "after": "x^2+2*x+1",
+      "explanation": "Applied basic algebraic simplification rules"
+    }
+  ],
+  "metadata": {
+    "computationTime": 23.5,
+    "method": "basic_algebraic_simplification",
+    "confidence": 0.95,
+    "isExact": true
+  },
+  "rulesApplied": [
+    "combine_like_terms",
+    "reduce_fractions",
+    "cancel_terms"
+  ],
+  "complexityReduction": -2
+}
+✓ Expansion test passed
+{
+  "result": "-4+x^2",
+  "steps": [
+    {
+      "id": "basic_expand",
+      "description": "Expand the expression",
+      "operation": "expansion",
+      "before": "(x+2)(x-2)",
+      "after": "-4+x^2",
+      "explanation": "Applied basic expansion rules"
+    }
+  ],
+  "metadata": {
+    "computationTime": 1,
+    "method": "basic_symbolic_expansion",
+    "confidence": 1,
+    "isExact": true
+  },
+  "terms": [
+    {
+      "coefficient": 1,
+      "variables": {},
+      "expression": "-4+x^2"
+    }
+  ],
+  "method": "DISTRIBUTIVE"
+}
+✓ Natural language test passed
+{
+  "result": "what is 2 + 3?",
+  "steps": [],
+  "metadata": {
+    "computationTime": 1,
+    "method": "nlp",
+    "confidence": 0.8,
+    "isExact": true
+  },
+  "intent": "evaluate_expression",
+  "expression": "what is 2 + 3?",
+  "confidence": 0.8,
+  "alternatives": []
+}
+
+
+Mathrok Library Usage Test
+Method 1: Using Constructor (window.Mathrok.Mathrok)
+Test Constructor Method
+Creating Mathrok instance using constructor...
+✓ Constructor method successful
+✓ Basic evaluation successful
+{ "result": 28, "steps": [ { "id": "evaluate", "description": "Evaluate the expression", "operation": "evaluation", "before": "2^3 + 4*5", "after": "28", "explanation": "Evaluated expression numerically" } ], "metadata": { "computationTime": 2.5, "method": "numeric_evaluation", "confidence": 1, "isExact": true }, "isNumerical": true }
+Method 2: Using Pre-instantiated Instance (window.Mathrok.default)
+Test Instance Method
+Using pre-instantiated Mathrok instance...
+✓ Instance method successful
+✓ Basic evaluation successful
+{ "result": 10.28318, "steps": [ { "id": "evaluate", "description": "Evaluate the expression", "operation": "evaluation", "before": "3.14159 * 2 + sqrt(16)", "after": "10.28318", "explanation": "Evaluated expression numerically" } ], "metadata": { "computationTime": 1.100000023841858, "method": "numeric_evaluation", "confidence": 1, "isExact": false }, "isNumerical": true }
+Advanced Operations Test
+Test Advanced Features
+Testing factoring...
+✓ Factoring successful
+{ "result": "(-2+x)*(2+x)", "steps": [ { "id": "basic_factor", "description": "Factor the expression", "operation": "factoring", "before": "x^2 - 4", "after": "(-2+x)*(2+x)", "explanation": "Applied basic factoring techniques" } ], "metadata": { "computationTime": 9.099999964237213, "method": "basic_symbolic_factoring", "confidence": 0.95, "isExact": true }, "factors": [ { "expression": "(-2+x)*(2+x)", "multiplicity": 1, "type": "IRREDUCIBLE" } ], "method": "COMMON_FACTOR" }
+Testing derivative...
+✓ Derivative successful
+{ "result": "3*x^2+4*x+1", "steps": [ { "id": "basic_differentiate", "description": "Differentiate with respect to x", "operation": "differentiation", "before": "x^3 + 2*x^2 + x", "after": "3*x^2 + 4*x + 1", "explanation": "Applied basic differentiation rules" }, { "id": "simplify_derivative", "description": "Simplify the derivative", "operation": "simplification", "before": "3*x^2 + 4*x + 1", "after": "3*x^2+4*x+1", "explanation": "Applied algebraic simplification to the derivative" } ], "metadata": { "computationTime": 37.299999952316284, "method": "basic_symbolic_differentiation", "confidence": 1, "isExact": true }, "variable": "x", "order": 1, "rulesApplied": [ "basic_differentiation" ] }
+Testing natural language processing...
+✓ Natural language processing successful
+{ "result": "derivative", "steps": [], "metadata": { "computationTime": 1.0999999642372131, "method": "nlp", "confidence": 0.8, "isExact": true }, "intent": "calculate_derivative", "expression": "derivative", "confidence": 0.8, "alternatives": [ { "expression": "what is the derivative of x²?", "intent": "evaluate_expression", "confidence": 0.6400000000000001, "description": "Alternative interpretation as evaluate_expression" } ] }

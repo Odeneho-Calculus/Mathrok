@@ -32,7 +32,10 @@ const baseConfig = {
         // Keep external dependencies out of the bundle
         '@xenova/transformers',
         'nerdamer',
-        'mathjs'
+        'mathjs',
+        'algebrite',
+        'decimal.js',
+        'fraction.js'
     ],
     onwarn: (warning, warn) => {
         // Suppress circular dependency warnings
@@ -110,9 +113,13 @@ const configs = [
         ]
     },
 
-    // UMD build for browsers
+    // UMD build for browsers - bundle math dependencies
     {
-        ...baseConfig,
+        input: 'src/index.ts',
+        external: [
+            // Only keep truly external dependencies for UMD build
+            '@xenova/transformers'
+        ],
         output: {
             file: 'dist/mathrok.umd.js',
             format: 'umd',
@@ -120,13 +127,28 @@ const configs = [
             sourcemap: true,
             exports: 'named',
             globals: {
-                '@xenova/transformers': 'Transformers',
-                'nerdamer': 'nerdamer',
-                'mathjs': 'math'
+                '@xenova/transformers': 'Transformers'
             }
         },
         plugins: [
-            ...baseConfig.plugins,
+            resolve({
+                browser: true,
+                preferBuiltins: false,
+                exportConditions: ['browser', 'module', 'import', 'default']
+            }),
+            commonjs({
+                include: ['node_modules/**'],
+                transformMixedEsModules: true
+            }),
+            json(),
+            typescript({
+                tsconfig: './tsconfig.json',
+                declaration: true,
+                declarationDir: './dist/types',
+                rootDir: './src',
+                noEmitOnError: false,
+                noCheck: true
+            }),
             ...(isProduction ? [terser({
                 compress: {
                     drop_console: true,
@@ -134,10 +156,35 @@ const configs = [
                     pure_funcs: ['console.log', 'console.debug']
                 },
                 mangle: {
-                    reserved: ['Mathrok']
+                    reserved: ['Mathrok', 'nerdamer']
                 }
             })] : [])
-        ]
+        ],
+        onwarn: (warning, warn) => {
+            // Suppress circular dependency warnings
+            if (warning.code === 'CIRCULAR_DEPENDENCY') {
+                return;
+            }
+
+            // Suppress all TypeScript warnings
+            if (warning.code && warning.code.startsWith('TS')) {
+                return;
+            }
+
+            // Ignore certain warnings
+            const ignoredWarnings = [
+                'THIS_IS_UNDEFINED',
+                'MISSING_EXPORT',
+                'MISSING_NODE_BUILTINS'
+            ];
+
+            if (warning.code && ignoredWarnings.includes(warning.code)) {
+                return;
+            }
+
+            // Log other warnings
+            warn(warning);
+        }
     }
 ];
 

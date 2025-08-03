@@ -90,8 +90,11 @@
   ],
   "dependencies": {
     "nerdamer": "^1.1.13",
-    "mathjs": "^11.11.3",
-    "@xenova/transformers": "^2.17.2"
+    "mathjs": "^12.4.3",
+    "algebrite": "^1.4.0",
+    "@xenova/transformers": "^2.17.2",
+    "decimal.js": "^10.4.3",
+    "fraction.js": "^4.3.7"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",

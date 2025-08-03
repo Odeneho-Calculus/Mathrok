@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathrok Voice Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .voice-controls {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .mic-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(238, 90, 36, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .mic-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(238, 90, 36, 0.4);
+        }
+
+        .mic-button:active {
+            transform: translateY(-2px);
+        }
+
+        .mic-button.listening {
+            background: linear-gradient(135deg, #ff4757, #c44569);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 500;
+            border-left: 4px solid #4facfe;
+        }
+
+        .status.listening {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .status.processing {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .result-card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 60px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+            border: 1px solid #dee2e6;
+        }
+
+        .math-expression {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .steps-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps-list li {
+            background: #e3f2fd;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #2196f3;
+        }
+
+        .examples {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .examples h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .example-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .example-btn {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .example-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+        }
+
+        .voice-output {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .voice-output h4 {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .voice-text {
+            font-style: italic;
+            color: #636e72;
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .mic-button {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎙️ Mathrok Voice Calculator</h1>
+            <p>Speak mathematical expressions and get instant solutions with step-by-step explanations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="voice-controls">
+                <button id="micButton" class="mic-button" title="Click to start voice input">
+                    🎤
+                </button>
+                <div id="status" class="status">
+                    Ready to listen - Click the microphone to start
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="result-card">
+                    <h3>🗣️ Recognized Speech</h3>
+                    <div id="recognizedText" class="result-content">
+                        Your spoken words will appear here...
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🧮 Mathematical Result</h3>
+                    <div id="resultText" class="result-content">
+                        The calculated result will appear here...
+                    </div>
+                </div>
+            </div>
+
+            <div id="stepsSection" class="result-card" style="margin-top: 30px; display: none;">
+                <h3>📚 Step-by-Step Solution</h3>
+                <ul id="stepsList" class="steps-list"></ul>
+            </div>
+
+            <div id="voiceOutput" class="voice-output" style="display: none;">
+                <h4>🔊 Voice Response</h4>
+                <div id="voiceText" class="voice-text"></div>
+            </div>
+
+            <div class="examples">
+                <h3>💡 Try These Examples</h3>
+                <div class="example-buttons">
+                    <button class="example-btn" onclick="processExample('solve x squared minus four equals zero')">
+                        "Solve x squared minus four equals zero"
+                    </button>
+                    <button class="example-btn" onclick="processExample('what is the derivative of sine x')">
+                        "What is the derivative of sine x"
+                    </button>
+                    <button class="example-btn" onclick="processExample('integrate x squared')">
+                        "Integrate x squared"
+                    </button>
+                    <button class="example-btn" onclick="processExample('factor x cubed minus eight')">
+                        "Factor x cubed minus eight"
+                    </button>
+                    <button class="example-btn" onclick="processExample('what is two plus three times four')">
+                        "What is two plus three times four"
+                    </button>
+                    <button class="example-btn"
+                        onclick="processExample('find the limit of sine x over x as x approaches zero')">
+                        "Find the limit of sine x over x as x approaches zero"
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Mathrok library -->
+    <script src="../../dist/mathrok.umd.js"></script>
+
+    <script>
+        // Initialize Mathrok (handle different export formats)
+        let mathrok;
+        try {
+            if (window.Mathrok && window.Mathrok.Mathrok && typeof window.Mathrok.Mathrok === 'function') {
+                mathrok = new window.Mathrok.Mathrok();
+            } else if (window.Mathrok && window.Mathrok.default && typeof window.Mathrok.default.constructor === 'function') {
+                mathrok = window.Mathrok.default;
+            } else if (window.Mathrok && window.Mathrok.default) {
+                mathrok = window.Mathrok.default;
+            } else {
+                throw new Error('Could not find Mathrok constructor');
+            }
+        } catch (error) {
+            console.error('Error initializing Mathrok:', error);
+            document.getElementById('status').textContent = 'Error: Could not initialize Mathrok library';
+            document.getElementById('status').className = 'status error';
+        }
+
+        // Voice recognition setup
+        let recognition = null;
+        let isListening = false;
+
+        // DOM elements
+        const micButton = document.getElementById('micButton');
+        const status = document.getElementById('status');
+        const recognizedText = document.getElementById('recognizedText');
+        const resultText = document.getElementById('resultText');
+        const stepsSection = document.getElementById('stepsSection');
+        const stepsList = document.getElementById('stepsList');
+        const voiceOutput = document.getElementById('voiceOutput');
+        const voiceText = document.getElementById('voiceText');
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    isListening = true;
+                    micButton.classList.add('listening');
+                    updateStatus('Listening... Speak your mathematical expression', 'listening');
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    recognizedText.textContent = transcript;
+                    processVoiceInput(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    updateStatus(`Error: ${event.error}`, 'error');
+                    stopListening();
+                };
+
+                recognition.onend = () => {
+                    stopListening();
+                };
+
+                return true;
+            } else {
+                updateStatus('Speech recognition not supported in this browser', 'error');
+                return false;
+            }
+        }
+
+        // Start/stop listening
+        function toggleListening() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            micButton.classList.remove('listening');
+            updateStatus('Processing...', 'processing');
+        }
+
+        // Update status display
+        function updateStatus(message, type = '') {
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        // Process voice input with NLP
+        async function processVoiceInput(text) {
+            try {
+                updateStatus('Processing natural language...', 'processing');
+
+                // Use Mathrok's NLP to process the voice input
+                const nlpResult = await mathrok.nl(text);
+
+                console.log('NLP Result:', nlpResult);
+
+                // Execute the mathematical operation based on intent
+                let result;
+                switch (nlpResult.intent) {
+                    case 'solve_equation':
+                        result = await mathrok.solve(nlpResult.expression);
+                        break;
+                    case 'calculate_derivative':
+                        result = await mathrok.derivative(nlpResult.expression, 'x');
+                        break;
+                    case 'calculate_integral':
+                        result = await mathrok.integral(nlpResult.expression, 'x');
+                        break;
+                    case 'factor_expression':
+                        result = await mathrok.factor(nlpResult.expression);
+                        break;
+                    case 'evaluate_expression':
+                        result = await mathrok.evaluate(nlpResult.expression);
+                        break;
+                    case 'calculate_limit':
+                        result = await mathrok.limit(nlpResult.expression, 'x', 0);
+                        break;
+                    default:
+                        result = await mathrok.evaluate(nlpResult.expression);
+                }
+
+                // Display results
+                displayResults(nlpResult, result);
+
+                // Generate and speak voice response
+                const voiceResponse = generateVoiceResponse(nlpResult, result);
+                displayVoiceResponse(voiceResponse);
+                speakResult(voiceResponse);
+
+                updateStatus('Complete! Ready for next input', '');
+
+            } catch (error) {
+                console.error('Error processing voice input:', error);
+                const errorMessage = `Sorry, I couldn't process that: ${error.message}`;
+                resultText.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+                updateStatus('Error processing input', 'error');
+                speakResult(errorMessage);
+            }
+        }
+
+        // Display results in the UI
+        function displayResults(nlpResult, result) {
+            // Show the mathematical expression and result
+            resultText.innerHTML = `
+                <div class="math-expression">Expression: ${nlpResult.expression}</div>
+                <div style="margin-top: 10px;"><strong>Result:</strong> ${result.result || JSON.stringify(result)}</div>
+                <div style="margin-top: 5px; font-size: 0.9rem; color: #666;">Intent: ${nlpResult.intent}</div>
+                <div style="margin-top: 5px; font-size: 0.9rem; color: #666;">Confidence: ${(nlpResult.confidence * 100).toFixed(1)}%</div>
+            `;
+
+            // Show steps if available
+            if (result.steps && result.steps.length > 0) {
+                stepsList.innerHTML = '';
+                result.steps.forEach((step, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = `${index + 1}. ${step.description || step.explanation || step}`;
+                    stepsList.appendChild(li);
+                });
+                stepsSection.style.display = 'block';
+            } else {
+                stepsSection.style.display = 'none';
+            }
+        }
+
+        // Generate natural language response
+        function generateVoiceResponse(nlpResult, result) {
+            const intent = nlpResult.intent;
+            const expression = nlpResult.expression;
+
+            switch (intent) {
+                case 'solve_equation':
+                    if (Array.isArray(result.result)) {
+                        const solutions = result.result.map(sol => sol.value || sol).join(', ');
+                        return `The solution to ${expression} is ${solutions}`;
+                    }
+                    return `The solution to ${expression} is ${result.result}`;
+
+                case 'calculate_derivative':
+                    return `The derivative of ${expression} is ${result.result}`;
+
+                case 'calculate_integral':
+                    return `The integral of ${expression} is ${result.result}`;
+
+                case 'factor_expression':
+                    return `The factored form of ${expression} is ${result.result}`;
+
+                case 'evaluate_expression':
+                    return `${expression} equals ${result.result || result}`;
+
+                case 'calculate_limit':
+                    return `The limit of ${expression} is ${result.result}`;
+
+                default:
+                    return `The result is ${result.result || JSON.stringify(result)}`;
+            }
+        }
+
+        // Display voice response
+        function displayVoiceResponse(response) {
+            voiceText.textContent = `"${response}"`;
+            voiceOutput.style.display = 'block';
+        }
+
+        // Text-to-speech
+        function speakResult(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Process example by simulating voice input
+        async function processExample(text) {
+            recognizedText.textContent = text;
+            await processVoiceInput(text);
+        }
+
+        // Event listeners
+        micButton.addEventListener('click', toggleListening);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if speech recognition is supported
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                updateStatus('Speech recognition not supported. Try the example buttons below.', 'error');
+                micButton.disabled = true;
+                micButton.style.opacity = '0.5';
+            }
+        });
+    </script>
+</body>
+
+</html>

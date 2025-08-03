@@ -1,0 +1,40 @@
+{
+  "name": "@mathrok/examples",
+  "version": "1.1.1",
+  "description": "Usage examples for Mathrok - AI-powered symbolic mathematics library",
+  "private": true,
+  "scripts": {
+    "start": "node basic-operations.js",
+    "basic": "node basic-operations.js",
+    "comprehensive": "node comprehensive-math.js",
+    "matrix": "node matrix-operations.js",
+    "plotting": "node 2d-plotting-node.js",
+    "nlp": "node natural-language.js",
+    "steps": "node step-by-step.js",
+    "voice": "node voice-input.js",
+    "voice:html": "echo 'Open voice-input.html in your browser to test voice functionality' && start voice-input.html",
+    "all": "npm run basic && npm run comprehensive && npm run matrix && npm run plotting && npm run nlp && npm run steps"
+  },
+  "keywords": [
+    "mathrok",
+    "examples",
+    "mathematics",
+    "symbolic-math",
+    "computer-algebra-system",
+    "ai",
+    "natural-language-processing"
+  ],
+  "author": {
+    "name": "Mathrok Team",
+    "email": "calculus069@gmail.com",
+    "url": "https://mathrok.dev"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "mathrok": "file:../../"
+  },
+  "packageManager": "pnpm@10.12.4"
+}

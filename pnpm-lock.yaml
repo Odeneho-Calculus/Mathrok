@@ -11,9 +11,18 @@ importers:
       '@xenova/transformers':
         specifier: ^2.17.2
         version: 2.17.2
+      algebrite:
+        specifier: ^1.4.0
+        version: 1.4.0
+      decimal.js:
+        specifier: ^10.4.3
+        version: 10.6.0
+      fraction.js:
+        specifier: ^4.3.7
+        version: 4.3.7
       mathjs:
-        specifier: ^11.11.3
-        version: 11.12.0
+        specifier: ^12.4.3
+        version: 12.4.3
       nerdamer:
         specifier: ^1.1.13
         version: 1.1.13
@@ -771,6 +780,9 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
+  algebrite@1.4.0:
+    resolution: {integrity: sha512-YPqD1baZOjuRnvR6xwyGYDJ9OvcqkPLLuxFAxnTGYVnKadzA5PyoMXm8mA1pYCE2xloMSgcZkTL1cXkK5C87cg==}
+
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
     engines: {node: '>=8'}
@@ -910,6 +922,10 @@ packages:
   basic-auth@2.0.1:
     resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
     engines: {node: '>= 0.8'}
+
+  big-integer@1.6.52:
+    resolution: {integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==}
+    engines: {node: '>=0.6'}
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -1438,6 +1454,9 @@ packages:
 
   fraction.js@4.3.4:
     resolution: {integrity: sha512-pwiTgt0Q7t+GHZA4yaLjObx4vXmmdcS0iSJ19o8d/goUGgItX9UZWKWNnLHehxviD8wU2IWRsnR8cD5+yOJP2Q==}
+
+  fraction.js@4.3.7:
+    resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
   fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
@@ -2024,9 +2043,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  mathjs@11.12.0:
-    resolution: {integrity: sha512-UGhVw8rS1AyedyI55DGz9q1qZ0p98kyKPyc9vherBkoueLntPfKtPBh14x+V4cdUWK0NZV2TBwqRFlvadscSuw==}
-    engines: {node: '>= 14'}
+  mathjs@12.4.3:
+    resolution: {integrity: sha512-oHdGPDbp7gO873xxG90RLq36IuicuKvbpr/bBG5g9c8Obm/VsKVrK9uoRZZHUodohzlnmCEqfDzbR3LH6m+aAQ==}
+    engines: {node: '>= 18'}
     hasBin: true
 
   merge-stream@2.0.0:
@@ -3727,6 +3746,10 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
+  algebrite@1.4.0:
+    dependencies:
+      big-integer: 1.6.52
+
   ansi-escapes@4.3.2:
     dependencies:
       type-fest: 0.21.3
@@ -3884,6 +3907,8 @@ snapshots:
   basic-auth@2.0.1:
     dependencies:
       safe-buffer: 5.1.2
+
+  big-integer@1.6.52: {}
 
   bl@4.1.0:
     dependencies:
@@ -4414,6 +4439,8 @@ snapshots:
       mime-types: 2.1.35
 
   fraction.js@4.3.4: {}
+
+  fraction.js@4.3.7: {}
 
   fs-constants@1.0.0: {}
 
@@ -5227,7 +5254,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mathjs@11.12.0:
+  mathjs@12.4.3:
     dependencies:
       '@babel/runtime': 7.28.2
       complex.js: 2.4.2

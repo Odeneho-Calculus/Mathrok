@@ -399,6 +399,8 @@ export class StatisticsEngine {
         return (n / ((n - 1) * (n - 2))) * sumCubedDeviations;
     }
 
+
+
     private kurtosis(data: number[], mean: number, stdDev: number): number {
         const n = data.length;
         const sumQuartedDeviations = data.reduce((sum, value) => {

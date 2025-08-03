@@ -76,8 +76,6 @@ export {
     StructureType,
     IntegrationMethod,
     FactorType,
-    FactoringMethod,
-    ExpansionMethod,
 } from './api.js';
 
 // AI types

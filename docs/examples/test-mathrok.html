@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mathrok Loading</title>
+</head>
+
+<body>
+    <h1>Testing Mathrok Library Loading</h1>
+    <div id="output"></div>
+
+    <!-- Include Mathrok library -->
+    <script src="../../dist/mathrok.umd.js"></script>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        try {
+            log('Window object keys: ' + Object.keys(window).filter(k => k.includes('Math')).join(', '));
+            log('window.Mathrok: ' + typeof window.Mathrok);
+            log('window.Mathrok keys: ' + (window.Mathrok ? Object.keys(window.Mathrok).join(', ') : 'undefined'));
+
+            if (window.Mathrok) {
+                log('window.Mathrok.Mathrok type: ' + typeof window.Mathrok.Mathrok);
+                log('window.Mathrok.default type: ' + typeof window.Mathrok.default);
+                if (window.Mathrok.default) {
+                    log('window.Mathrok.default is instance: ' + (window.Mathrok.default.constructor ? 'yes' : 'no'));
+                }
+            }
+
+            // Try different ways to access Mathrok
+            let mathrok = null;
+
+            if (window.Mathrok && window.Mathrok.Mathrok && typeof window.Mathrok.Mathrok === 'function') {
+                mathrok = new window.Mathrok.Mathrok();
+                log('Successfully created Mathrok instance from window.Mathrok.Mathrok');
+            } else if (window.Mathrok && window.Mathrok.default) {
+                mathrok = window.Mathrok.default;
+                log('Using existing Mathrok instance from window.Mathrok.default');
+            } else {
+                log('Could not find Mathrok constructor or instance');
+            }
+
+            if (mathrok) {
+                log('Mathrok instance methods: ' + Object.getOwnPropertyNames(Object.getPrototypeOf(mathrok)).join(', '));
+
+                // Test a simple operation
+                mathrok.evaluate('2 + 3').then(result => {
+                    log('Test evaluation 2 + 3 = ' + JSON.stringify(result));
+                }).catch(error => {
+                    log('Error in evaluation: ' + error.message);
+                });
+
+            } else {
+                log('ERROR: Could not find Mathrok instance');
+            }
+
+        } catch (error) {
+            log('ERROR: ' + error.message);
+            log('Stack: ' + error.stack);
+        }
+    </script>
+</body>
+
+</html>

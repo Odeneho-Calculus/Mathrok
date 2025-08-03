@@ -16,16 +16,17 @@ import type {
     SimplifyResult,
     Factor,
     Term,
-    FactoringMethod,
-    ExpansionMethod,
-    FactorType,
 } from '../../types/api.js';
 import { MathError, MathErrorType } from '../../types/core.js';
 
-// Use require for Nerdamer to ensure proper module loading
-const nerdamer = require('nerdamer');
-require('nerdamer/Algebra');
-require('nerdamer/Solve');
+// Import mathematical libraries with proper ES6 imports for browser compatibility
+import nerdamer from 'nerdamer';
+import 'nerdamer/Algebra';
+import 'nerdamer/Solve';
+import * as Algebrite from 'algebrite';
+import * as math from 'mathjs';
+import Decimal from 'decimal.js';
+import Fraction from 'fraction.js';
 
 /**
  * Advanced algebraic operations engine
@@ -290,50 +291,70 @@ export class AlgebraEngine {
 
     // Private helper methods
 
-    private determineFactoringMethod(expression: string): FactoringMethod {
+    private determineFactoringMethod(expression: string): string {
         // Analyze expression to determine best factoring method
         if (this.isQuadratic(expression)) {
-            return FactoringMethod.QUADRATIC;
+            return 'quadratic';
         }
         if (this.isDifferenceOfSquares(expression)) {
-            return FactoringMethod.DIFFERENCE_OF_SQUARES;
+            return 'difference_of_squares';
         }
         if (this.isPerfectSquare(expression)) {
-            return FactoringMethod.PERFECT_SQUARE;
+            return 'perfect_square';
         }
         if (this.hasCommonFactor(expression)) {
-            return FactoringMethod.COMMON_FACTOR;
+            return 'common_factor';
         }
         if (this.canUseGrouping(expression)) {
-            return FactoringMethod.GROUPING;
+            return 'grouping';
         }
-        return FactoringMethod.RATIONAL_ROOT;
+        return 'rational_root';
     }
 
-    private async applyFactoringMethod(expression: string, method: FactoringMethod): Promise<string> {
+    private async applyFactoringMethod(expression: string, method: string): Promise<string> {
         try {
-            switch (method) {
-                case FactoringMethod.COMMON_FACTOR:
-                    return this.factorCommonFactor(expression);
-                case FactoringMethod.DIFFERENCE_OF_SQUARES:
-                    return this.factorDifferenceOfSquares(expression);
-                case FactoringMethod.PERFECT_SQUARE:
-                    return this.factorPerfectSquare(expression);
-                case FactoringMethod.QUADRATIC:
-                    return this.factorQuadratic(expression);
-                case FactoringMethod.GROUPING:
-                    return this.factorByGrouping(expression);
-                case FactoringMethod.RATIONAL_ROOT:
-                    return this.factorUsingRationalRoot(expression);
-                default:
-                    // Fallback to Nerdamer's general factoring
-                    const factored = nerdamer(`factor(${expression})`);
-                    return factored.toString();
+            // Try multiple libraries for best results
+            let result = expression;
+
+            // First try Algebrite for advanced symbolic factoring
+            try {
+                const algebraicResult = Algebrite.run(`factor(${expression})`);
+                if (algebraicResult && algebraicResult !== expression && !algebraicResult.includes('Stop')) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
             }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (result === expression) {
+                try {
+                    const nerdamerResult = nerdamer(`factor(${expression})`);
+                    const factored = nerdamerResult.toString();
+                    if (factored && factored !== expression) {
+                        result = factored;
+                    }
+                } catch (e) {
+                    // Continue to next method
+                }
+            }
+
+            // If still no result, try Math.js
+            if (result === expression) {
+                try {
+                    const mathResult = math.simplify(expression);
+                    if (mathResult && mathResult.toString() !== expression) {
+                        result = mathResult.toString();
+                    }
+                } catch (e) {
+                    // Use original expression
+                }
+            }
+
+            return result;
         } catch (error) {
-            // Fallback to Nerdamer's general factoring
-            const factored = nerdamer(`factor(${expression})`);
-            return factored.toString();
+            // Final fallback - return original expression
+            return expression;
         }
     }
 
@@ -425,50 +446,86 @@ export class AlgebraEngine {
             factors.push({
                 expression,
                 multiplicity: 1,
-                type: FactorType.IRREDUCIBLE,
+                type: 'irreducible',
             });
         }
 
         return factors;
     }
 
-    private determineFactorType(factor: string): FactorType {
+    private determineFactorType(factor: string): string {
         // Remove parentheses for analysis
         const cleanFactor = factor.replace(/[()]/g, '');
 
         // Check if it's a constant
         if (/^-?\d+(\.\d+)?$/.test(cleanFactor)) {
-            return FactorType.CONSTANT;
+            return 'constant';
         }
 
         // Check if it's linear (degree 1)
         if (/^[+-]?\d*[a-zA-Z]([+-]\d+)?$/.test(cleanFactor)) {
-            return FactorType.LINEAR;
+            return 'linear';
         }
 
         // Check if it's quadratic (degree 2)
         if (cleanFactor.includes('^2') || cleanFactor.match(/[a-zA-Z]\^?2/)) {
-            return FactorType.QUADRATIC;
+            return 'quadratic';
         }
 
-        return FactorType.IRREDUCIBLE;
+        return 'irreducible';
     }
 
-    private determineExpansionMethod(expression: string): ExpansionMethod {
+    private determineExpansionMethod(expression: string): string {
         if (expression.includes('^') && /\([^)]+\)\^?\d+/.test(expression)) {
-            return ExpansionMethod.BINOMIAL;
+            return 'binomial';
         }
         if (expression.match(/\([^)]*\)\s*\([^)]*\)/)) {
-            return ExpansionMethod.DISTRIBUTIVE;
+            return 'distributive';
         }
-        return ExpansionMethod.DISTRIBUTIVE;
+        return 'distributive';
     }
 
-    private async applyExpansionMethod(expression: string, method: ExpansionMethod): Promise<string> {
+    private async applyExpansionMethod(expression: string, method: string): Promise<string> {
         try {
-            // Use Nerdamer's expand function
-            const expanded = nerdamer(`expand(${expression})`);
-            return expanded.toString();
+            // Try multiple libraries for best expansion results
+            let result = expression;
+
+            // First try Algebrite for advanced symbolic expansion
+            try {
+                const algebraicResult = Algebrite.run(`expand(${expression})`);
+                if (algebraicResult && algebraicResult !== expression && !algebraicResult.includes('Stop')) {
+                    result = algebraicResult;
+                }
+            } catch (e) {
+                // Continue to next method
+            }
+
+            // If Algebrite didn't work, try Nerdamer
+            if (result === expression) {
+                try {
+                    const nerdamerResult = nerdamer(`expand(${expression})`);
+                    const expanded = nerdamerResult.toString();
+                    if (expanded && expanded !== expression) {
+                        result = expanded;
+                    }
+                } catch (e) {
+                    // Continue to next method
+                }
+            }
+
+            // If still no result, try Math.js
+            if (result === expression) {
+                try {
+                    const mathResult = math.simplify(expression);
+                    if (mathResult && mathResult.toString() !== expression) {
+                        result = mathResult.toString();
+                    }
+                } catch (e) {
+                    // Use original expression
+                }
+            }
+
+            return result;
         } catch (error) {
             return expression;
         }
@@ -540,7 +597,7 @@ export class AlgebraEngine {
     private generateFactoringSteps(
         original: string,
         factored: string,
-        method: FactoringMethod
+        method: string
     ): SolutionStep[] {
         const steps: SolutionStep[] = [];
 
@@ -568,7 +625,7 @@ export class AlgebraEngine {
     private generateExpansionSteps(
         original: string,
         expanded: string,
-        method: ExpansionMethod
+        method: string
     ): SolutionStep[] {
         const steps: SolutionStep[] = [];
 

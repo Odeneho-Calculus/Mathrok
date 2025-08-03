@@ -7,9 +7,7 @@
  */
 
 // Import the library (Node.js)
-// const { Mathrok } = require('mathrok');
-
-// For browser, the library is already available as a global variable
+const { Mathrok } = require('mathrok');
 
 // Initialize the library
 const mathrok = new Mathrok();
