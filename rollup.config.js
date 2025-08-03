@@ -29,8 +29,10 @@ const baseConfig = {
         })
     ],
     external: [
-        // Keep AI models external for lazy loading
-        '@xenova/transformers'
+        // Keep external dependencies out of the bundle
+        '@xenova/transformers',
+        'nerdamer',
+        'mathjs'
     ],
     onwarn: (warning, warn) => {
         // Suppress circular dependency warnings
@@ -118,7 +120,9 @@ const configs = [
             sourcemap: true,
             exports: 'named',
             globals: {
-                '@xenova/transformers': 'Transformers'
+                '@xenova/transformers': 'Transformers',
+                'nerdamer': 'nerdamer',
+                'mathjs': 'math'
             }
         },
         plugins: [
