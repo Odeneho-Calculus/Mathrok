@@ -1,6 +1,6 @@
 {
   "name": "mathrok",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "AI-powered symbolic mathematics library combining traditional Computer Algebra System (CAS) capabilities with natural language processing for math problem solving",
   "main": "dist/mathrok.cjs.js",
   "module": "dist/mathrok.esm.js",
@@ -68,17 +68,17 @@
   "author": {
     "name": "Mathrok Team",
     "email": "calculus069@gmail.com",
-    "url": "https://mathrok.dev"
+    "url": "https://github.com/Odeneho-Calculus/Mathrok"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mathrok/mathrok.git"
+    "url": "https://github.com/Odeneho-Calculus/Mathrok.git"
   },
   "bugs": {
-    "url": "https://github.com/mathrok/mathrok/issues"
+    "url": "https://github.com/Odeneho-Calculus/Mathrok/issues"
   },
-  "homepage": "https://mathrok.dev",
+  "homepage": "https://github.com/Odeneho-Calculus/Mathrok",
   "engines": {
     "node": ">=14.0.0"
   },
