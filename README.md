@@ -158,7 +158,7 @@ Mathrok works in all modern browsers (Chrome, Firefox, Safari, Edge) and Node.js
 
 ## License
 
-MIT © [Mathrok Team](https://mathrok.dev)
+MIT © [Mathrok Team](https://github.com/Odeneho-Calculus/Mathrok)
 
 ## Contributing
 

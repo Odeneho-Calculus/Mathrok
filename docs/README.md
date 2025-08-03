@@ -23,9 +23,9 @@ Welcome to the Mathrok documentation. This directory contains comprehensive guid
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/mathrok/mathrok)
+- [GitHub Repository](https://github.com/Odeneho-Calculus/Mathrok)
 - [NPM Package](https://www.npmjs.com/package/mathrok)
-- [Issue Tracker](https://github.com/mathrok/mathrok/issues)
+- [Issue Tracker](https://github.com/Odeneho-Calculus/Mathrok/issues)
 
 ## Getting Help
 
@@ -33,7 +33,7 @@ If you need help with Mathrok, you can:
 
 1. Check the documentation in this directory
 2. Look for examples in the [examples](./examples) directory
-3. Open an issue on the [GitHub repository](https://github.com/mathrok/mathrok/issues)
+3. Open an issue on the [GitHub repository](https://github.com/Odeneho-Calculus/Mathrok/issues)
 4. Contact the maintainers at calculus069@gmail.com
 
 ## License
