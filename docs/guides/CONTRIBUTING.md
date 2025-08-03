@@ -37,12 +37,12 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/mathrok.git
-   cd mathrok
+   git clone https://github.com/Odeneho-Calculus/Mathrok.git
+   cd Mathrok
    ```
 3. Add the original repository as a remote:
    ```bash
-   git remote add upstream https://github.com/mathrok/mathrok.git
+   git remote add upstream https://github.com/Odeneho-Calculus/Mathrok.git
    ```
 
 ## Development Setup
