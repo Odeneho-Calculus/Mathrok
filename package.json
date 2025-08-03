@@ -1,0 +1,145 @@
+{
+  "name": "mathrok",
+  "version": "1.1.0",
+  "type": "module",
+  "description": "AI-powered symbolic mathematics library combining traditional Computer Algebra System (CAS) capabilities with natural language processing for math problem solving",
+  "main": "dist/mathrok.cjs.js",
+  "module": "dist/mathrok.esm.js",
+  "browser": "dist/mathrok.umd.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/mathrok.esm.js",
+      "require": "./dist/mathrok.cjs.js",
+      "browser": "./dist/mathrok.umd.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --coverage --ci --watchAll=false",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean && npm run lint && npm run type-check",
+    "prepack": "npm run build",
+    "benchmark": "node scripts/benchmark.js",
+    "docs:generate": "typedoc src/index.ts",
+    "docs:serve": "http-server docs -p 8080",
+    "prepare": "husky install",
+    "size-check": "bundlesize"
+  },
+  "keywords": [
+    "mathematics",
+    "symbolic-math",
+    "computer-algebra-system",
+    "cas",
+    "calculus",
+    "algebra",
+    "equation-solver",
+    "natural-language-processing",
+    "ai",
+    "machine-learning",
+    "math-parser",
+    "step-by-step",
+    "mathematical-expressions",
+    "derivatives",
+    "integrals",
+    "matrix-operations",
+    "typescript",
+    "javascript",
+    "browser",
+    "nodejs"
+  ],
+  "author": {
+    "name": "Mathrok Team",
+    "email": "contact@mathrok.dev",
+    "url": "https://mathrok.dev"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathrok/mathrok.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mathrok/mathrok/issues"
+  },
+  "homepage": "https://mathrok.dev",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "dependencies": {
+    "nerdamer": "^1.1.13",
+    "mathjs": "^11.11.3",
+    "@xenova/transformers": "^2.17.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "bundlesize": "^0.18.1",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "http-server": "^14.1.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.5.0",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.6.2",
+    "typedoc": "^0.25.4",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "bundlesize": [
+    {
+      "path": "./dist/mathrok.esm.js",
+      "maxSize": "400kb"
+    },
+    {
+      "path": "./dist/mathrok.cjs.js",
+      "maxSize": "400kb"
+    },
+    {
+      "path": "./dist/mathrok.umd.js",
+      "maxSize": "500kb"
+    }
+  ],
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}

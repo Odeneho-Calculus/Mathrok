@@ -1,0 +1,84 @@
+# Source files
+src/
+tests/
+scripts/
+config/
+
+# Development files
+.eslintrc.js
+.prettierrc.js
+jest.config.js
+rollup.config.js
+tsconfig.json
+
+# Documentation source
+docs/
+*.md
+!README.md
+
+# Development dependencies
+node_modules/
+coverage/
+.nyc_output/
+
+# Build artifacts
+*.tsbuildinfo
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# CI/CD files
+.github/
+.travis.yml
+.circleci/
+
+# Logs
+*.log
+logs/
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/__tests__/
+
+# Examples (keep only essential ones)
+examples/advanced/
+examples/development/
+
+# Temporary files
+tmp/
+temp/
+
+# Benchmark files
+benchmark-results/
+scripts/benchmark.js
+
+# Husky
+.husky/
+
+# Environment files
+.env*
+
+# Cache directories
+.cache/
+.transformers-cache/
+
+# Lock files (let users choose their package manager)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
